@@ -16,8 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -64,8 +63,28 @@ public class TripServiceTest {
         when(userSession.getLoggedUser()).thenReturn(null);
 
         TripService tripService = new TripService(tripsDAOProvider, userSessionProvider);
-        assertThrows(UserNotLoggedInException.class, () -> tripService.getTripsByUser(user));
 
+        assertThrows(UserNotLoggedInException.class, () -> tripService.getTripsByUser(user));
+    }
+
+    @Test
+    void returns_empty_trip_list_if_logged_user_is_not_friend_of_the_given_user() {
+        User givenUser = new User();
+        User anotherUser = new User();
+        givenUser.addFriend(anotherUser);
+
+        List<Trip> trips = new ArrayList<>();
+        Trip trip = new Trip();
+        trips.add(trip);
+
+        when(userSessionProvider.getUserSessionInstance()).thenReturn(userSession);
+        when(userSession.getLoggedUser()).thenReturn(loggedUser);
+
+        TripService tripService = new TripService(tripsDAOProvider, userSessionProvider);
+        List<Trip> resultTrips = tripService.getTripsByUser(givenUser);
+
+        verifyNoInteractions(tripsDAOProvider);
+        assertEquals(new ArrayList<>(), resultTrips);
     }
 
 }
