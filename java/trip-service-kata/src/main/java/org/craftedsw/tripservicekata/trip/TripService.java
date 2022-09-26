@@ -17,19 +17,17 @@ public class TripService {
         this.tripsDAOProvider = tripsDAOProvider;
     }
 
-
     public List<Trip> getTripsByUser(User user) throws UserNotLoggedInException {
-        List<Trip> tripList = new ArrayList<Trip>();
         if (user.isFriend(checkUserLoggedIn())) {
-            tripList = tripsDAOProvider.findTripsByUser(user);
+            return tripsDAOProvider.findTripsByUser(user);
         }
-        return tripList;
+        return new ArrayList<Trip>();
     }
 
     private User checkUserLoggedIn() {
-        Optional<User> userOptional = Optional.ofNullable(userSessionProvider.getUserSessionInstance().getLoggedUser());
+        Optional<User> userOptional = Optional.ofNullable(
+                userSessionProvider.getUserSessionInstance().getLoggedUser());
         return userOptional.orElseThrow(UserNotLoggedInException::new);
     }
-
 
 }

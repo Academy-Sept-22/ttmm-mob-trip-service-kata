@@ -19,70 +19,66 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TripServiceTest {
-    // happy path: valid user is logged in
-    // mock logged user
-    // mock tripDAO
-    // returns triplist if logged user is a friend of the given user
-    @Mock private UserSessionProvider userSessionProvider;
-    @Mock private UserSession userSession;
+
+    @Mock
+    private UserSessionProvider userSessionProvider;
+    @Mock
+    private UserSession userSession;
     @Mock
     private TripsDAOProvider tripsDAOProvider;
 
     private User loggedUser;
+    private TripService tripService;
+    private User givenUser;
 
-    @BeforeEach public void setup() {
+    @BeforeEach
+    public void setup() {
         loggedUser = new User();
+        givenUser = new User();
+        tripService = new TripService(tripsDAOProvider, userSessionProvider);
     }
 
     @Test
     void returns_users_trip_list_if_logged_user_is_a_friend_of_the_given_user() {
-        User givenUser = new User();
         givenUser.addFriend(loggedUser);
+        List<Trip> expectedTrips = buildTripList();
 
-        List<Trip> expectedTrips = new ArrayList<>();
-        Trip trip = new Trip();
-        expectedTrips.add(trip);
-
-        when(userSessionProvider.getUserSessionInstance()).thenReturn(userSession);
-        when(userSession.getLoggedUser()).thenReturn(loggedUser);
+        prepareSessionBehavior(loggedUser);
         when(tripsDAOProvider.findTripsByUser(givenUser)).thenReturn(expectedTrips);
 
-        TripService tripService = new TripService(tripsDAOProvider, userSessionProvider);
         List<Trip> resultTrips = tripService.getTripsByUser(givenUser);
 
         assertEquals(expectedTrips, resultTrips);
-
     }
 
     @Test
-    public void returns_an_exception_when_user_is_not_logged_in() {
-        User user = new User();
-        when(userSessionProvider.getUserSessionInstance()).thenReturn(userSession);
-        when(userSession.getLoggedUser()).thenReturn(null);
-
-        TripService tripService = new TripService(tripsDAOProvider, userSessionProvider);
-
-        assertThrows(UserNotLoggedInException.class, () -> tripService.getTripsByUser(user));
+    public void throws_an_exception_when_user_is_not_logged_in() {
+        prepareSessionBehavior(null);
+        assertThrows(UserNotLoggedInException.class, () -> tripService.getTripsByUser(givenUser));
     }
 
     @Test
     void returns_empty_trip_list_if_logged_user_is_not_friend_of_the_given_user() {
-        User givenUser = new User();
-        User anotherUser = new User();
-        givenUser.addFriend(anotherUser);
+        givenUser.addFriend(new User());
 
-        List<Trip> trips = new ArrayList<>();
-        Trip trip = new Trip();
-        trips.add(trip);
+        prepareSessionBehavior(loggedUser);
 
-        when(userSessionProvider.getUserSessionInstance()).thenReturn(userSession);
-        when(userSession.getLoggedUser()).thenReturn(loggedUser);
-
-        TripService tripService = new TripService(tripsDAOProvider, userSessionProvider);
         List<Trip> resultTrips = tripService.getTripsByUser(givenUser);
 
         verifyNoInteractions(tripsDAOProvider);
         assertEquals(new ArrayList<>(), resultTrips);
+    }
+
+    private void prepareSessionBehavior(User loggedUser) {
+        when(userSessionProvider.getUserSessionInstance()).thenReturn(userSession);
+        when(userSession.getLoggedUser()).thenReturn(loggedUser);
+    }
+
+    private static List<Trip> buildTripList() {
+        List<Trip> expectedTrips = new ArrayList<>();
+        Trip trip = new Trip();
+        expectedTrips.add(trip);
+        return expectedTrips;
     }
 
 }
