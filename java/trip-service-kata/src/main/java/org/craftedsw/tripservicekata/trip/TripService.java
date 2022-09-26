@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.craftedsw.tripservicekata.exception.UserNotLoggedInException;
 import org.craftedsw.tripservicekata.user.User;
-import org.craftedsw.tripservicekata.user.UserSession;
 
 public class TripService {
 
@@ -21,7 +20,7 @@ public class TripService {
 
     public List<Trip> getTripsByUser(User user) throws UserNotLoggedInException {
         List<Trip> tripList = new ArrayList<Trip>();
-        if (isFriend(user, checkUserLoggedIn())) {
+        if (user.isFriend(checkUserLoggedIn())) {
             tripList = tripsDAOProvider.findTripsByUser(user);
         }
         return tripList;
@@ -29,19 +28,7 @@ public class TripService {
 
     private User checkUserLoggedIn() {
         Optional<User> userOptional = Optional.ofNullable(userSessionProvider.getUserSessionInstance().getLoggedUser());
-        if (userOptional.isEmpty()) {
-            throw new UserNotLoggedInException();
-        }
-        return userOptional.get();
-    }
-
-    private boolean isFriend(User user, User loggedUser) {
-        for (User friend : user.getFriends()) {
-            if (friend.equals(loggedUser)) {
-                return true;
-            }
-        }
-        return false;
+        return userOptional.orElseThrow(UserNotLoggedInException::new);
     }
 
 
