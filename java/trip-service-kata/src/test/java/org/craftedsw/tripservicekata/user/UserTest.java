@@ -14,13 +14,16 @@ public class UserTest {
 		User friendOfUserOne = new User();
 		userOne.addFriend(friendOfUserOne);
 
-		assertTrue(userOne.isFriend(friendOfUserOne));
+		assertTrue(userOne.isFriendsWith(friendOfUserOne));
 	}
 
 	@Test
 	public void should_return_a_trip_to_a_user() {
 		User userOne = new User();
 		Trip trip = new Trip();
+
+		assertEquals(0, userOne.trips().size());
+
 		userOne.addTrip(trip);
 
 		assertEquals(1, userOne.trips().size());

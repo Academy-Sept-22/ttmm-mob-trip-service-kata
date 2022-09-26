@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TripServiceTest {
-
 	@Mock
 	private UserSessionProvider userSessionProvider;
 	@Mock
