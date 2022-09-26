@@ -1,5 +1,6 @@
 package org.craftedsw.tripservicekata.trip;
 
+import org.craftedsw.tripservicekata.exception.UserNotLoggedInException;
 import org.craftedsw.tripservicekata.user.User;
 import org.craftedsw.tripservicekata.user.UserSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,6 +54,17 @@ public class TripServiceTest {
         List<Trip> resultTrips = tripService.getTripsByUser(givenUser);
 
         assertEquals(expectedTrips, resultTrips);
+
+    }
+
+    @Test
+    public void returns_an_exception_when_user_is_not_logged_in() {
+        User user = new User();
+        when(userSessionProvider.getUserSessionInstance()).thenReturn(userSession);
+        when(userSession.getLoggedUser()).thenReturn(null);
+
+        TripService tripService = new TripService(tripsDAOProvider, userSessionProvider);
+        assertThrows(UserNotLoggedInException.class, () -> tripService.getTripsByUser(user));
 
     }
 
