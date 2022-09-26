@@ -26,6 +26,8 @@ public class TripServiceTest {
     // returns triplist if logged user is a friend of the given user
     @Mock private UserSessionProvider userSessionProvider;
     @Mock private UserSession userSession;
+    @Mock
+    private TripsDAOProvider tripsDAOProvider;
 
     private User loggedUser;
 
@@ -44,9 +46,9 @@ public class TripServiceTest {
 
         when(userSessionProvider.getUserSessionInstance()).thenReturn(userSession);
         when(userSession.getLoggedUser()).thenReturn(loggedUser);
+        when(tripsDAOProvider.findTripsByUser(givenUser)).thenReturn(expectedTrips);
 
-
-        TripService tripService = new TripService(userSessionProvider);
+        TripService tripService = new TripService(tripsDAOProvider, userSessionProvider);
         List<Trip> resultTrips = tripService.getTripsByUser(givenUser);
 
         assertEquals(expectedTrips, resultTrips);
