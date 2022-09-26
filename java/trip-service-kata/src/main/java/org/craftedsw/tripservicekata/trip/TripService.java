@@ -25,9 +25,7 @@ public class TripService {
     }
 
     private User checkUserLoggedIn() {
-        Optional<User> userOptional = Optional.ofNullable(
-                userSessionProvider.getUserSessionInstance().getLoggedUser());
-        return userOptional.orElseThrow(UserNotLoggedInException::new);
+        return userSessionProvider.getUserSessionInstance().getLoggedUser();
     }
 
 }
