@@ -53,7 +53,7 @@ public class TripServiceTest {
 
     @Test
     public void throws_an_exception_when_user_is_not_logged_in() {
-        when(userSessionProvider.getUserSessionInstance()).thenThrow(new UserNotLoggedInException());
+        when(userSessionProvider.getLoggedUser()).thenThrow(new UserNotLoggedInException());
         assertThrows(UserNotLoggedInException.class, () -> tripService.getTripsByUser(givenUser));
     }
 
@@ -70,8 +70,7 @@ public class TripServiceTest {
     }
 
     private void prepareSessionBehavior(User loggedUser) {
-        when(userSessionProvider.getUserSessionInstance()).thenReturn(userSession);
-        when(userSession.getLoggedUser()).thenReturn(loggedUser);
+        when(userSessionProvider.getLoggedUser()).thenReturn(loggedUser);
     }
 
     private static List<Trip> buildTripList() {

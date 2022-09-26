@@ -1,31 +1,30 @@
 package org.craftedsw.tripservicekata.trip;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import org.craftedsw.tripservicekata.exception.UserNotLoggedInException;
 import org.craftedsw.tripservicekata.user.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TripService {
 
-    private final UserSessionProvider userSessionProvider;
-    private final TripsDAOProvider tripsDAOProvider;
+	private final UserSessionProvider userSessionProvider;
+	private final TripsDAOProvider tripsDAOProvider;
 
-    public TripService(TripsDAOProvider tripsDAOProvider, UserSessionProvider userSessionProvider) {
-        this.userSessionProvider = userSessionProvider;
-        this.tripsDAOProvider = tripsDAOProvider;
-    }
+	public TripService(TripsDAOProvider tripsDAOProvider, UserSessionProvider userSessionProvider) {
+		this.userSessionProvider = userSessionProvider;
+		this.tripsDAOProvider = tripsDAOProvider;
+	}
 
-    public List<Trip> getTripsByUser(User user) throws UserNotLoggedInException {
-        if (user.isFriend(checkUserLoggedIn())) {
-            return tripsDAOProvider.findTripsByUser(user);
-        }
-        return new ArrayList<Trip>();
-    }
+	public List<Trip> getTripsByUser(User user) throws UserNotLoggedInException {
+		if (user.isFriend(checkUserLoggedIn())) {
+			return tripsDAOProvider.findTripsByUser(user);
+		}
+		return new ArrayList<>();
+	}
 
-    private User checkUserLoggedIn() {
-        return userSessionProvider.getUserSessionInstance().getLoggedUser();
-    }
+	private User checkUserLoggedIn() {
+		return userSessionProvider.getLoggedUser();
+	}
 
 }
